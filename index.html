@@ -1,1 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Piano Virtual & Leitor de Partituras</title>
 
+  <!-- Fontes do Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Estilo externo -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Biblioteca VexFlow para desenhar as partituras -->
+  <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
+</head>
+<body>
+
+  <header>
+    <h1>🎹 Piano Virtual & Partituras</h1>
+    <p>Escolha uma música, crie suas notas ou reproduza no teclado!</p>
+  </header>
+
+  <div class="container">
+    
+    <!-- Painel de Controles e Entrada -->
+    <div class="card">
+      <div class="controls-grid">
+        
+        <!-- Seleção de Músicas Pré-carregadas -->
+        <div class="form-group">
+          <label for="song-select">Selecione uma Música:</label>
+          <select id="song-select">
+            <option value="fur_elise">Für Elise - Beethoven</option>
+            <option value="ode_to_joy">Ode à Alegria - Beethoven</option>
+            <option value="twinkle">Brilha, Brilha Estrelinha</option>
+            <option value="mario">Super Mario - Tema</option>
+          </select>
+        </div>
+
+        <!-- Entrada de Notas Personalizadas -->
+        <div class="form-group">
+          <label for="custom-notes">Ou digite suas próprias notas (ex: C4 E4 G4 C5):</label>
+          <input type="text" id="custom-notes" placeholder="Ex: C4 D4 E4 F4 G4 A4 B4 C5">
+        </div>
+
+      </div>
+
+      <!-- Botão para carregar notas digitadas -->
+      <div class="btn-group">
+        <button id="btn-load-custom">Carregar Notas Digitadas</button>
+      </div>
+
+      <!-- Controles de Player e Andamento -->
+      <div class="playback-controls">
+        <div class="btn-group">
+          <button id="btn-play">▶ Tocar</button>
+          <button id="btn-stop" class="btn-danger">◼ Parar</button>
+        </div>
+
+        <div class="tempo-container">
+          <label for="tempo">Velocidade (BPM): <span id="bpm-display">120</span></label>
+          <input type="range" id="tempo" min="40" max="240" value="120">
+        </div>
+      </div>
+    </div>
+
+    <!-- Área de Exibição da Partitura -->
+    <div class="card">
+      <label>Partitura em Tempo Real:</label>
+      <div id="sheet-music-container"></div>
+    </div>
+
+    <!-- Teclado Visual do Piano -->
+    <div class="card piano-container">
+      <div class="piano" id="piano">
+        <!-- O teclado é gerado automaticamente pelo JavaScript -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Script JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>

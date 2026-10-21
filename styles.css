@@ -1,1 +1,229 @@
+:root {
+  --bg-dark: #121214;
+  --card-bg: #1e1e24;
+  --accent-color: #6c5ce7;
+  --accent-hover: #5b4bc4;
+  --text-light: #f1f2f6;
+  --text-muted: #a4b0be;
+  --key-white: #ffffff;
+  --key-black: #2d3436;
+  --active-key: #74b9ff;
+}
 
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-light);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+header h1 {
+  font-size: 2.2rem;
+  color: var(--accent-color);
+  margin-bottom: 5px;
+}
+
+header p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.container {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.controls-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+@media (max-width: 768px) {
+  .controls-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+select, input, button {
+  font-family: inherit;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #2b2b36;
+  color: var(--text-light);
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+select:focus, input:focus {
+  border-color: var(--accent-color);
+}
+
+button {
+  background: var(--accent-color);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+button:hover {
+  background: var(--accent-hover);
+}
+
+.btn-danger {
+  background: #d63031;
+}
+
+.btn-danger:hover {
+  background: #b2bec3;
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.playback-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+  border-top: 1px solid #333;
+  padding-top: 15px;
+  margin-top: 15px;
+}
+
+.tempo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tempo-container input[type="range"] {
+  width: 120px;
+}
+
+/* Área da Partitura */
+#sheet-music-container {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 10px;
+  overflow-x: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 160px;
+  margin-top: 10px;
+}
+
+/* Teclado do Piano */
+.piano-container {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  user-select: none;
+  padding: 20px 0;
+  overflow-x: auto;
+}
+
+.piano {
+  display: flex;
+  position: relative;
+  background: #000;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.key {
+  cursor: pointer;
+  position: relative;
+  border-radius: 0 0 5px 5px;
+  transition: background 0.1s;
+}
+
+.key.white {
+  width: 45px;
+  height: 180px;
+  background: var(--key-white);
+  border: 1px solid #ccc;
+  z-index: 1;
+}
+
+.key.white.active {
+  background: var(--active-key) !important;
+}
+
+.key.black {
+  width: 28px;
+  height: 110px;
+  background: var(--key-black);
+  margin-left: -14px;
+  margin-right: -14px;
+  z-index: 2;
+  border-radius: 0 0 3px 3px;
+}
+
+.key.black.active {
+  background: #0984e3 !important;
+}
+
+.key-label {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: #666;
+  pointer-events: none;
+}
+
+.key.black .key-label {
+  color: #aaa;
+}
