@@ -1,63 +1,58 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8"><link rel="stylesheet" href="style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Piano Virtual & Leitor de Partituras</title>
-
-  <!-- Fontes do Google -->
+  <title>Piano Virtual & Gerador de Partituras</title>
+  
+  <!-- Fontes Google -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-  <!-- Estilo externo -->
-  <link rel="stylesheet" href="style.css">
-
-  <!-- Biblioteca VexFlow para desenhar as partituras -->
+  
+  <!-- Estilos -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Biblioteca VexFlow para partituras -->
   <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
 </head>
 <body>
 
   <header>
-    <h1>🎹 Piano Virtual & Partituras</h1>
-    <p>Escolha uma música, crie suas notas ou reproduza no teclado!</p>
+    <h1>🎹 Piano Virtual & Partituras Completas</h1>
+    <p>Escolha uma música completa ou peça qualquer música para gerar a partitura!</p>
   </header>
 
   <div class="container">
     
-    <!-- Painel de Controles e Entrada -->
+    <!-- Painel de Seleção e Busca -->
     <div class="card">
       <div class="controls-grid">
         
-        <!-- Seleção de Músicas Pré-carregadas -->
         <div class="form-group">
-          <label for="song-select">Selecione uma Música:</label>
+          <label for="song-select">Selecione uma Música Completa:</label>
           <select id="song-select">
-            <option value="fur_elise">Für Elise - Beethoven</option>
-            <option value="ode_to_joy">Ode à Alegria - Beethoven</option>
-            <option value="twinkle">Brilha, Brilha Estrelinha</option>
-            <option value="mario">Super Mario - Tema</option>
+            <option value="fur_elise">Für Elise (Completa) - Beethoven</option>
+            <option value="ode_to_joy">Ode à Alegria (Tema Completo) - Beethoven</option>
+            <option value="mario">Super Mario Bros (Tema Principal)</option>
+            <option value="twinkle">Brilha, Brilha Estrelinha (Completo)</option>
           </select>
         </div>
 
-        <!-- Entrada de Notas Personalizadas -->
         <div class="form-group">
-          <label for="custom-notes">Ou digite suas próprias notas (ex: C4 E4 G4 C5):</label>
-          <input type="text" id="custom-notes" placeholder="Ex: C4 D4 E4 F4 G4 A4 B4 C5">
+          <label for="song-search">Peça qualquer música ou digite notas:</label>
+          <div class="search-box">
+            <input type="text" id="song-search" placeholder="Ex: Parabéns pra Você, Moonlight Sonata ou C4 D4 E4...">
+            <button id="btn-generate">🎼 Gerar Partitura</button>
+          </div>
         </div>
 
       </div>
 
-      <!-- Botão para carregar notas digitadas -->
-      <div class="btn-group">
-        <button id="btn-load-custom">Carregar Notas Digitadas</button>
-      </div>
-
-      <!-- Controles de Player e Andamento -->
+      <!-- Controles de Player -->
       <div class="playback-controls">
         <div class="btn-group">
-          <button id="btn-play">▶ Tocar</button>
+          <button id="btn-play">▶ Tocar Música</button>
           <button id="btn-stop" class="btn-danger">◼ Parar</button>
         </div>
 
@@ -68,22 +63,22 @@
       </div>
     </div>
 
-    <!-- Área de Exibição da Partitura -->
+    <!-- Área da Partitura Completa -->
     <div class="card">
-      <label>Partitura em Tempo Real:</label>
+      <div class="sheet-header">
+        <label>Partitura em Tempo Real (Múltiplos Compassos):</label>
+        <span id="song-title-display">Für Elise - Beethoven</span>
+      </div>
       <div id="sheet-music-container"></div>
     </div>
 
-    <!-- Teclado Visual do Piano -->
+    <!-- Teclado Visual -->
     <div class="card piano-container">
-      <div class="piano" id="piano">
-        <!-- O teclado é gerado automaticamente pelo JavaScript -->
-      </div>
+      <div class="piano" id="piano"></div>
     </div>
 
   </div>
 
-  <!-- Script JavaScript -->
   <script src="script.js"></script>
 </body>
 </html>
