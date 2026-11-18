@@ -18,12 +18,12 @@
   <main>
     <section>
       <div class="grid-controls">
-        <!-- API Key (sem trava de prefixo) -->
+        <!-- Chave API (Aceita AQ. e AIzaSy) -->
         <div class="control-group full-width">
-          <label for="apiKeyInput">🔑 Chave de API do Google AI Studio (aceita AQ. ou AIzaSy)</label>
+          <label for="api-key-input">🔑 Chave de API do Google AI Studio (aceita AQ. ou AIzaSy)</label>
           <div class="input-row">
-            <input type="password" id="apiKeyInput" placeholder="Cole aqui sua chave (ex: AQ.... ou AIzaSy...)" />
-            <button id="saveKeyBtn" class="secondary">Salvar Chave</button>
+            <input type="password" id="api-key-input" placeholder="Cole aqui sua chave (ex: AQ.... ou AIzaSy...)" />
+            <button id="btn-save-key" class="secondary">Salvar Chave</button>
             <button id="clearKeyBtn" class="danger">Limpar</button>
           </div>
         </div>
@@ -37,7 +37,7 @@
           </div>
         </div>
 
-        <!-- Músicas Clássicas -->
+        <!-- Clássicos -->
         <div class="control-group">
           <label for="presetSelect">🎼 Clássicos Prontos (Offline)</label>
           <div class="input-row">
@@ -53,7 +53,7 @@
         </div>
       </div>
 
-      <div id="statusBar" class="status-bar" aria-live="polite" role="status">
+      <div id="status-message" class="status-bar" aria-live="polite" role="status">
         Pronto para tocar. Cole sua chave API acima para gerar músicas com IA ou escolha um clássico.
       </div>
     </section>
