@@ -1,513 +1,323 @@
-// ============================================================================
-// CONFIGURAÇÃO DA CHAVE API VIA LOCALSTORAGE (Seguro para o GitHub)
-// ============================================================================
-function getApiKey() {
-  return localStorage.getItem("gemini_api_key") || "";
-}
-
-// ============================================================================
-// 1. GERAÇÃO DAS 5 OITAVAS (C2 até C7 - 61 Teclas)
-// ============================================================================
-const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-const NOTE_FREQUENCIES = {};
-const ALL_PIANO_KEYS = [];
-
-function buildFiveOctaves() {
-  for (let midi = 36; midi <= 96; midi++) {
-    const octave = Math.floor(midi / 12) - 1;
-    const noteName = NOTE_NAMES[midi % 12];
-    const fullNote = `${noteName}${octave}`;
-    const frequency = 440 * Math.pow(2, (midi - 69) / 12);
-    
-    NOTE_FREQUENCIES[fullNote] = frequency;
-    ALL_PIANO_KEYS.push(fullNote);
-  }
-}
-
-buildFiveOctaves();
-
-// ============================================================================
-// 2. BIBLIOTECA DE MÚSICAS COMPLETAS DO SITE
-// ============================================================================
-const PRESET_SONGS = {
-  fur_elise: {
-    title: "Für Elise (Completa) - Ludwig van Beethoven",
-    notes: [
-      { note: 'E5', duration: '8' }, { note: 'D#5', duration: '8' }, { note: 'E5', duration: '8' }, { note: 'D#5', duration: '8' },
-      { note: 'E5', duration: '8' }, { note: 'B4', duration: '8' }, { note: 'D5', duration: '8' }, { note: 'C5', duration: '8' },
-      { note: 'A4', duration: '4' }, { note: 'C4', duration: '8' }, { note: 'E4', duration: '8' }, { note: 'A4', duration: '8' },
-      { note: 'B4', duration: '4' }, { note: 'E4', duration: '8' }, { note: 'G#4', duration: '8' }, { note: 'B4', duration: '8' },
-      { note: 'C5', duration: '4' }, { note: 'E4', duration: '8' }, { note: 'E5', duration: '8' }, { note: 'D#5', duration: '8' },
-      { note: 'E5', duration: '8' }, { note: 'D#5', duration: '8' }, { note: 'E5', duration: '8' }, { note: 'B4', duration: '8' },
-      { note: 'D5', duration: '8' }, { note: 'C5', duration: '8' }, { note: 'A4', duration: '4' }, { note: 'C4', duration: '8' },
-      { note: 'E4', duration: '8' }, { note: 'A4', duration: '8' }, { note: 'B4', duration: '4' }, { note: 'E4', duration: '8' },
-      { note: 'C5', duration: '8' }, { note: 'B4', duration: '8' }, { note: 'A4', duration: '4' }, { note: 'B4', duration: '8' },
-      { note: 'C5', duration: '8' }, { note: 'D5', duration: '8' }, { note: 'E5', duration: '4' }, { note: 'G4', duration: '8' },
-      { note: 'F5', duration: '8' }, { note: 'E5', duration: '8' }, { note: 'D5', duration: '4' }, { note: 'F4', duration: '8' },
-      { note: 'E5', duration: '8' }, { note: 'D5', duration: '8' }, { note: 'C5', duration: '4' }, { note: 'E4', duration: '8' },
-      { note: 'D5', duration: '8' }, { note: 'C5', duration: '8' }, { note: 'B4', duration: '2' }
-    ]
-  },
-  ode_to_joy: {
-    title: "Ode à Alegria (Completa) - Ludwig van Beethoven",
-    notes: [
-      { note: 'E4', duration: '4' }, { note: 'E4', duration: '4' }, { note: 'F4', duration: '4' }, { note: 'G4', duration: '4' },
-      { note: 'G4', duration: '4' }, { note: 'F4', duration: '4' }, { note: 'E4', duration: '4' }, { note: 'D4', duration: '4' },
-      { note: 'C4', duration: '4' }, { note: 'C4', duration: '4' }, { note: 'D4', duration: '4' }, { note: 'E4', duration: '4' },
-      { note: 'E4', duration: '4' }, { note: 'D4', duration: '8' }, { note: 'D4', duration: '2' },
-      { note: 'E4', duration: '4' }, { note: 'E4', duration: '4' }, { note: 'F4', duration: '4' }, { note: 'G4', duration: '4' },
-      { note: 'G4', duration: '4' }, { note: 'F4', duration: '4' }, { note: 'E4', duration: '4' }, { note: 'D4', duration: '4' },
-      { note: 'C4', duration: '4' }, { note: 'C4', duration: '4' }, { note: 'D4', duration: '4' }, { note: 'E4', duration: '4' },
-      { note: 'D4', duration: '4' }, { note: 'C4', duration: '8' }, { note: 'C4', duration: '2' },
-      { note: 'D4', duration: '4' }, { note: 'D4', duration: '4' }, { note: 'E4', duration: '4' }, { note: 'C4', duration: '4' },
-      { note: 'D4', duration: '4' }, { note: 'E4', duration: '8' }, { note: 'F4', duration: '8' }, { note: 'E4', duration: '4' },
-      { note: 'C4', duration: '4' }, { note: 'D4', duration: '4' }, { note: 'E4', duration: '8' }, { note: 'F4', duration: '8' },
-      { note: 'E4', duration: '4' }, { note: 'D4', duration: '4' }, { note: 'C4', duration: '4' }, { note: 'D4', duration: '4' },
-      { note: 'G3', duration: '2' }, { note: 'E4', duration: '4' }, { note: 'E4', duration: '4' }, { note: 'F4', duration: '4' },
-      { note: 'G4', duration: '4' }, { note: 'G4', duration: '4' }, { note: 'F4', duration: '4' }, { note: 'E4', duration: '4' },
-      { note: 'D4', duration: '4' }, { note: 'C4', duration: '4' }, { note: 'C4', duration: '4' }, { note: 'D4', duration: '4' },
-      { note: 'E4', duration: '4' }, { note: 'D4', duration: '4' }, { note: 'C4', duration: '8' }, { note: 'C4', duration: '2' }
-    ]
-  },
-  canon_d: {
-    title: "Cânone em Ré Maior - Johann Pachelbel",
-    notes: [
-      { note: 'F#5', duration: '4' }, { note: 'E5', duration: '4' }, { note: 'D5', duration: '4' }, { note: 'C#5', duration: '4' },
-      { note: 'B4', duration: '4' }, { note: 'A4', duration: '4' }, { note: 'B4', duration: '4' }, { note: 'C#5', duration: '4' },
-      { note: 'D5', duration: '8' }, { note: 'F#5', duration: '8' }, { note: 'A5', duration: '8' }, { note: 'G5', duration: '8' },
-      { note: 'F#5', duration: '8' }, { note: 'D5', duration: '8' }, { note: 'F#5', duration: '8' }, { note: 'E5', duration: '8' },
-      { note: 'D5', duration: '8' }, { note: 'B4', duration: '8' }, { note: 'D5', duration: '8' }, { note: 'A5', duration: '8' },
-      { note: 'G5', duration: '8' }, { note: 'B5', duration: '8' }, { note: 'A5', duration: '8' }, { note: 'G5', duration: '8' },
-      { note: 'F#5', duration: '2' }
-    ]
-  },
-  nocturne: {
-    title: "Noturno Op. 9 Nº 2 - Frédéric Chopin",
-    notes: [
-      { note: 'G4', duration: '8' }, { note: 'E5', duration: '4' }, { note: 'D5', duration: '8' }, { note: 'E5', duration: '8' },
-      { note: 'D5', duration: '8' }, { note: 'C5', duration: '4' }, { note: 'G4', duration: '4' }, { note: 'E5', duration: '4' },
-      { note: 'C5', duration: '8' }, { note: 'G5', duration: '4' }, { note: 'F5', duration: '8' }, { note: 'E5', duration: '8' },
-      { note: 'D5', duration: '8' }, { note: 'E5', duration: '4' }, { note: 'B4', duration: '4' }, { note: 'C5', duration: '2' }
-    ]
-  }
-};
-
-// ============================================================================
-// 3. ESTADO DA APLICAÇÃO & SINTETIZADOR DE PIANO (Web Audio API)
-// ============================================================================
-let currentSongData = PRESET_SONGS.fur_elise;
-let isPlaying = false;
-let currentIndex = 0;
+// --- ÁUDIO (Web Audio API) ---
 let audioCtx = null;
-let timeoutId = null;
-let renderedNoteElements = [];
-
-function initAudio() {
+function getAudioCtx() {
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
   if (audioCtx.state === 'suspended') {
     audioCtx.resume();
   }
+  return audioCtx;
 }
 
-function playPianoNote(pitch, durationSec = 0.6) {
-  initAudio();
-  const freq = NOTE_FREQUENCIES[pitch];
-  if (!freq) return;
+const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
-  const now = audioCtx.currentTime;
+function noteToFreq(note) {
+  const match = note.match(/^([A-G]#?)(\d)$/);
+  if (!match) return 440;
+  const [, name, octStr] = match;
+  const octave = parseInt(octStr, 10);
+  const semitone = NOTE_NAMES.indexOf(name);
+  const midi = (octave + 1) * 12 + semitone;
+  return 440 * Math.pow(2, (midi - 69) / 12);
+}
 
-  const osc1 = audioCtx.createOscillator();
-  const osc2 = audioCtx.createOscillator();
-  const gainNode = audioCtx.createGain();
+function playTone(note, durationSec = 0.5) {
+  const ctx = getAudioCtx();
+  const freq = noteToFreq(note);
+  const now = ctx.currentTime;
+
+  const osc1 = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const gain = ctx.createGain();
 
   osc1.type = 'triangle';
   osc2.type = 'sine';
-
   osc1.frequency.setValueAtTime(freq, now);
   osc2.frequency.setValueAtTime(freq * 2, now);
 
-  const osc2Gain = audioCtx.createGain();
-  osc2Gain.gain.setValueAtTime(0.25, now);
+  const subGain = ctx.createGain();
+  subGain.gain.setValueAtTime(0.15, now);
 
-  gainNode.gain.setValueAtTime(0.001, now);
-  gainNode.gain.linearRampToValueAtTime(0.7, now + 0.015);
-  gainNode.gain.exponentialRampToValueAtTime(0.001, now + durationSec + 0.25);
+  gain.gain.setValueAtTime(0.001, now);
+  gain.gain.exponentialRampToValueAtTime(0.35, now + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + Math.max(durationSec, 0.25) + 0.35);
 
-  osc1.connect(gainNode);
-  osc2.connect(osc2Gain);
-  osc2Gain.connect(gainNode);
-  gainNode.connect(audioCtx.destination);
+  osc1.connect(gain);
+  osc2.connect(subGain);
+  subGain.connect(gain);
+  gain.connect(ctx.destination);
 
   osc1.start(now);
   osc2.start(now);
-  osc1.stop(now + durationSec + 0.3);
-  osc2.stop(now + durationSec + 0.3);
+  osc1.stop(now + durationSec + 0.4);
+  osc2.stop(now + durationSec + 0.4);
+
+  highlightKey(note, durationSec * 1000);
 }
 
-// ============================================================================
-// 4. CONSTRUÇÃO DO TECLADO VISUAL DE 5 OITAVAS
-// ============================================================================
-const pianoEl = document.getElementById('piano');
-const pianoWrapper = document.getElementById('piano-wrapper');
+// --- CONSTRUÇÃO DO PIANO (C2 a C7 - 61 Teclas) ---
+const pianoKeysEl = document.getElementById('pianoKeys');
+const keyElements = {};
 
-function renderFiveOctavePiano() {
-  pianoEl.innerHTML = '';
-  ALL_PIANO_KEYS.forEach(note => {
-    const isBlack = note.includes('#');
-    const key = document.createElement('div');
-    key.className = `key ${isBlack ? 'black' : 'white'}`;
-    key.dataset.note = note;
+function buildPiano() {
+  pianoKeysEl.innerHTML = '';
+  let whiteIndex = 0;
+  const whiteWidth = 42;
 
-    const label = document.createElement('span');
-    label.className = 'key-label';
-    label.innerText = note;
-    key.appendChild(label);
+  for (let oct = 2; oct <= 7; oct++) {
+    for (let i = 0; i < NOTE_NAMES.length; i++) {
+      if (oct === 7 && i > 0) break; // Termina em C7
+      const note = NOTE_NAMES[i] + oct;
+      const isBlack = note.includes('#');
 
-    key.addEventListener('mousedown', () => {
-      playPianoNote(note, 0.7);
-      highlightPianoKey(note, 350);
-    });
+      const keyDiv = document.createElement('div');
+      keyDiv.dataset.note = note;
+      keyDiv.textContent = note;
 
-    pianoEl.appendChild(key);
-  });
-
-  setTimeout(() => {
-    const c4Key = pianoEl.querySelector('[data-note="C4"]');
-    if (c4Key) {
-      pianoWrapper.scrollLeft = c4Key.offsetLeft - (pianoWrapper.clientWidth / 2) + 50;
-    }
-  }, 100);
-}
-
-function highlightPianoKey(note, durationMs = 300) {
-  const key = pianoEl.querySelector(`[data-note="${note}"]`);
-  if (!key) return;
-
-  key.classList.add('active');
-
-  const keyLeft = key.offsetLeft;
-  const wrapperLeft = pianoWrapper.scrollLeft;
-  const wrapperWidth = pianoWrapper.clientWidth;
-
-  if (keyLeft < wrapperLeft + 40 || keyLeft > wrapperLeft + wrapperWidth - 60) {
-    pianoWrapper.scrollTo({
-      left: keyLeft - wrapperWidth / 2,
-      behavior: 'smooth'
-    });
-  }
-
-  setTimeout(() => {
-    key.classList.remove('active');
-  }, durationMs);
-}
-
-// ============================================================================
-// 5. RENDERIZAÇÃO DA PARTITURA COMPLETA (VexFlow)
-// ============================================================================
-function renderFullSheetMusic(notesArray) {
-  const container = document.getElementById('sheet-music-container');
-  container.innerHTML = '';
-  renderedNoteElements = [];
-
-  if (!notesArray || notesArray.length === 0) return;
-
-  if (typeof Vex === 'undefined' || !Vex.Flow) {
-    container.innerHTML = '<p style="color:#0a0c10;padding:20px;">Erro ao carregar a biblioteca de partituras. Recarregue a página.</p>';
-    return;
-  }
-
-  const { Renderer, Stave, StaveNote, Voice, Formatter, Accidental } = Vex.Flow;
-
-  const NOTES_PER_MEASURE = 4;
-  const totalMeasures = Math.ceil(notesArray.length / NOTES_PER_MEASURE);
-  const measureWidth = 230;
-  const totalWidth = Math.max(850, totalMeasures * measureWidth + 60);
-
-  const renderer = new Renderer(container, Renderer.Backends.SVG);
-  renderer.resize(totalWidth, 165);
-  const context = renderer.getContext();
-
-  let currentX = 15;
-
-  for (let m = 0; m < totalMeasures; m++) {
-    const slice = notesArray.slice(m * NOTES_PER_MEASURE, (m + 1) * NOTES_PER_MEASURE);
-    const stave = new Stave(currentX, 15, measureWidth);
-
-    if (m === 0) {
-      stave.addClef('treble').addTimeSignature('4/4');
-    }
-
-    stave.setContext(context).draw();
-
-    const vexNotes = slice.map(item => {
-      const cleanNote = item.note.trim();
-      const pitchPart = cleanNote.slice(0, -1).toLowerCase();
-      const octavePart = cleanNote.slice(-1);
-      const hasSharp = pitchPart.includes('#');
-
-      const formattedKey = `${pitchPart.replace('#', '')}/${octavePart}`;
-      const validDuration = ['1', '2', '4', '8', '16'].includes(String(item.duration))
-        ? String(item.duration)
-        : '4';
-
-      const staveNote = new StaveNote({
-        keys: [formattedKey],
-        duration: validDuration
-      });
-
-      if (hasSharp) {
-        staveNote.addModifier(new Accidental('#'));
+      if (!isBlack) {
+        keyDiv.className = 'key-white';
+        pianoKeysEl.appendChild(keyDiv);
+        whiteIndex++;
+      } else {
+        keyDiv.className = 'key-black';
+        keyDiv.style.left = `${whiteIndex * whiteWidth - 13}px`;
+        pianoKeysEl.appendChild(keyDiv);
       }
 
-      return staveNote;
-    });
-
-    try {
-      const voice = new Voice({ num_beats: vexNotes.length, beat_value: 4 });
-      voice.setStrict(false);
-      voice.addTickables(vexNotes);
-      new Formatter().joinAndModifyVoices([voice]).format([voice], measureWidth - 45);
-      voice.draw(context, stave);
-    } catch (err) {
-      Formatter.FormatAndDraw(context, stave, vexNotes);
+      keyDiv.addEventListener('mousedown', () => playTone(note, 0.6));
+      keyElements[note] = keyDiv;
     }
-
-    currentX += measureWidth;
   }
-
-  renderedNoteElements = Array.from(container.querySelectorAll('.vf-stavenote'));
 }
 
-function highlightSheetNote(index) {
-  renderedNoteElements.forEach(el => {
-    el.querySelectorAll('path, rect').forEach(shape => {
-      shape.style.fill = '#000000';
-      shape.style.stroke = '#000000';
-    });
+function highlightKey(note, ms = 300) {
+  const el = keyElements[note];
+  if (!el) return;
+  el.classList.add('active');
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  setTimeout(() => el.classList.remove('active'), Math.min(ms, 600));
+}
+
+function scrollToOctave(oct) {
+  const el = keyElements[`C${oct}`];
+  if (el) el.scrollIntoView({ behavior: 'smooth', inline: 'start' });
+}
+
+// Teclado físico (Oitava 4)
+const KEYBOARD_MAP = {
+  a: 'C4', w: 'C#4', s: 'D4', e: 'D#4', d: 'E4',
+  f: 'F4', t: 'F#4', g: 'G4', y: 'G#4', h: 'A4',
+  u: 'A#4', j: 'B4', k: 'C5', o: 'C#5', l: 'D5'
+};
+
+window.addEventListener('keydown', (e) => {
+  if (document.activeElement.tagName === 'INPUT') return;
+  const note = KEYBOARD_MAP[e.key.toLowerCase()];
+  if (note && !e.repeat) playTone(note, 0.5);
+});
+
+// --- PARTITURAS PRONTAS ---
+const PRESETS = {
+  fur_elise: {
+    title: 'Für Elise - Ludwig van Beethoven',
+    notes: [
+      ['E5',0.25],['D#5',0.25],['E5',0.25],['D#5',0.25],['E5',0.25],['B4',0.25],['D5',0.25],['C5',0.25],['A4',0.5],
+      ['C4',0.25],['E4',0.25],['A4',0.25],['B4',0.5],['E4',0.25],['G#4',0.25],['B4',0.25],['C5',0.5],
+      ['E4',0.25],['E5',0.25],['D#5',0.25],['E5',0.25],['D#5',0.25],['E5',0.25],['B4',0.25],['D5',0.25],['C5',0.25],['A4',0.5],
+      ['C4',0.25],['E4',0.25],['A4',0.25],['B4',0.5],['E4',0.25],['C5',0.25],['B4',0.25],['A4',0.7]
+    ]
+  },
+  ode_to_joy: {
+    title: 'Ode à Alegria - Ludwig van Beethoven',
+    notes: [
+      ['E4',0.4],['E4',0.4],['F4',0.4],['G4',0.4],['G4',0.4],['F4',0.4],['E4',0.4],['D4',0.4],
+      ['C4',0.4],['C4',0.4],['D4',0.4],['E4',0.4],['E4',0.6],['D4',0.2],['D4',0.8],
+      ['E4',0.4],['E4',0.4],['F4',0.4],['G4',0.4],['G4',0.4],['F4',0.4],['E4',0.4],['D4',0.4],
+      ['C4',0.4],['C4',0.4],['D4',0.4],['E4',0.4],['D4',0.6],['C4',0.2],['C4',0.8]
+    ]
+  },
+  canon_d: {
+    title: 'Cânone em Ré - Johann Pachelbel',
+    notes: [
+      ['F#5',0.5],['E5',0.5],['D5',0.5],['C#5',0.5],['B4',0.5],['A4',0.5],['B4',0.5],['C#5',0.5],
+      ['D5',0.5],['C#5',0.5],['B4',0.5],['A4',0.5],['G4',0.5],['F#4',0.5],['G4',0.5],['E4',0.5]
+    ]
+  },
+  nocturne: {
+    title: 'Noturno Op. 9 Nº 2 - Frédéric Chopin',
+    notes: [
+      ['G4',0.4],['E5',0.8],['D5',0.3],['E5',0.3],['D5',0.3],['C5',0.6],['G4',0.4],['E5',0.8],
+      ['C5',0.4],['A5',0.8],['G5',0.4],['F5',0.4],['E5',0.4],['D5',0.4],['E5',0.8]
+    ]
+  }
+};
+
+let currentSong = PRESETS.fur_elise;
+let isPlaying = false;
+let playTimers = [];
+
+const notesContainer = document.getElementById('notesContainer');
+const songTitleEl = document.getElementById('songTitle');
+const statusBar = document.getElementById('statusBar');
+const speedSlider = document.getElementById('speedSlider');
+const speedValue = document.getElementById('speedValue');
+
+speedSlider.addEventListener('input', () => {
+  speedValue.textContent = `${parseFloat(speedSlider.value).toFixed(1)}x`;
+});
+
+function renderSheet(song) {
+  currentSong = song;
+  songTitleEl.textContent = song.title;
+  notesContainer.innerHTML = '';
+  song.notes.forEach(([note], idx) => {
+    const pill = document.createElement('span');
+    pill.className = 'note-pill';
+    pill.id = `note-pill-${idx}`;
+    pill.textContent = note;
+    pill.onclick = () => playTone(note, 0.4);
+    notesContainer.appendChild(pill);
   });
-
-  const activeEl = renderedNoteElements[index];
-  if (activeEl) {
-    activeEl.querySelectorAll('path, rect').forEach(shape => {
-      shape.style.fill = '#2563eb';
-      shape.style.stroke = '#2563eb';
-    });
-  }
 }
 
-// ============================================================================
-// 6. GERADOR DE PARTITURAS VIA INTELIGÊNCIA ARTIFICIAL (GEMINI API)
-// ============================================================================
-async function generateSongWithAI(songPrompt) {
-  const statusEl = document.getElementById('status-message');
-  const generateBtn = document.getElementById('btn-generate');
-  const apiKey = getApiKey();
+function stopPlayback() {
+  isPlaying = false;
+  playTimers.forEach(clearTimeout);
+  playTimers = [];
+  document.querySelectorAll('.note-pill.active').forEach(el => el.classList.remove('active'));
+}
+
+function startPlayback() {
+  stopPlayback();
+  isPlaying = true;
+  const speed = parseFloat(speedSlider.value) || 1.0;
+  let elapsed = 0;
+
+  statusBar.textContent = `🎵 Tocando: ${currentSong.title}`;
+
+  currentSong.notes.forEach(([note, dur], idx) => {
+    const adjustedDur = dur / speed;
+    const timer = setTimeout(() => {
+      if (!isPlaying) return;
+      playTone(note, adjustedDur);
+
+      document.querySelectorAll('.note-pill.active').forEach(el => el.classList.remove('active'));
+      const pill = document.getElementById(`note-pill-${idx}`);
+      if (pill) {
+        pill.classList.add('active');
+        pill.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      if (idx === currentSong.notes.length - 1) {
+        setTimeout(() => {
+          isPlaying = false;
+          statusBar.textContent = `✅ Execução concluída: ${currentSong.title}`;
+        }, adjustedDur * 1000);
+      }
+    }, elapsed * 1000);
+
+    playTimers.push(timer);
+    elapsed += adjustedDur;
+  });
+}
+
+document.getElementById('presetSelect').addEventListener('change', (e) => {
+  stopPlayback();
+  renderSheet(PRESETS[e.target.value]);
+});
+
+document.getElementById('playBtn').addEventListener('click', startPlayback);
+document.getElementById('stopBtn').addEventListener('click', () => {
+  stopPlayback();
+  statusBar.textContent = '⏹ Reprodução parada.';
+});
+
+// --- GERENCIAMENTO DA API KEY ---
+const apiKeyInput = document.getElementById('apiKeyInput');
+const savedKey = localStorage.getItem('gemini_piano_api_key');
+if (savedKey) apiKeyInput.value = savedKey;
+
+document.getElementById('saveKeyBtn').addEventListener('click', () => {
+  const key = apiKeyInput.value.trim();
+  if (!key) {
+    statusBar.textContent = '⚠️ Cole uma chave de API válida antes de salvar.';
+    return;
+  }
+  localStorage.setItem('gemini_piano_api_key', key);
+  statusBar.textContent = '✅ Chave de API salva no navegador com sucesso!';
+});
+
+document.getElementById('clearKeyBtn').addEventListener('click', () => {
+  localStorage.removeItem('gemini_piano_api_key');
+  apiKeyInput.value = '';
+  statusBar.textContent = '🗑️ Chave de API removida.';
+});
+
+// --- INTEGRAÇÃO COM GEMINI API ---
+document.getElementById('generateBtn').addEventListener('click', async () => {
+  const apiKey = apiKeyInput.value.trim();
+  const promptText = document.getElementById('aiPromptInput').value.trim();
 
   if (!apiKey) {
-    statusEl.innerHTML = `<span style="color: #60a5fa;">⚠️ Chave API ausente:</span> Cole sua chave no campo acima e clique em "Salvar Chave".`;
+    statusBar.textContent = '⚠️ Insira sua chave de API do Google AI Studio no campo acima.';
+    return;
+  }
+  if (!promptText) {
+    statusBar.textContent = '⚠️ Digite o nome de uma música ou estilo para a IA compor.';
     return;
   }
 
   stopPlayback();
-  generateBtn.disabled = true;
-  generateBtn.innerText = "Compondo...";
-  statusEl.innerText = `🎼 Buscando e escrevendo a partitura completa de "${songPrompt}"...`;
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  statusBar.textContent = `⏳ Compondo "${promptText}" com Gemini...`;
 
-  const systemPrompt = `Você é um pianista e transcritor musical profissional. 
-Quando o usuário pedir o nome de uma música, retorne a melodia COMPLETA e reconhecível dela (entre 32 e 64 notas) em formato JSON estrito.
-Use apenas notas com sustenido entre C2 e C7 (ex: "C4", "D#4", "F5", "G3"). Não use bemóis (b), converta para sustenido (#).
-Para durações use apenas: "2" (mínima), "4" (semínima), "8" (colcheia) ou "16" (semicolcheia).
-Responda APENAS com um JSON válido no seguinte formato:
-{
-  "title": "Nome Oficial da Música - Compositor/Artista",
-  "bpm": 110,
-  "notes": [
-    {"note": "E4", "duration": "4"},
-    {"note": "G4", "duration": "8"}
-  ]
-}`;
+  const systemInstruction = `Você é um pianista e compositor. Crie uma partitura completa e fiel para piano da música solicitada usando notas entre C2 e C7 (ex: "C4", "F#4", "A4", "D5").
+Responda APENAS com um JSON válido neste formato exato, sem markdown e sem texto extra:
+{"title":"Nome da Música - Compositor","notes":[["C4",0.4],["E4",0.4],["G4",0.6]]}
+Onde cada item em "notes" é [nota, duracao_em_segundos]. Gere entre 24 e 64 notas.`;
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`,
       {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: `Transcreva a música completa para piano: ${songPrompt}` }] }],
-          systemInstruction: { parts: [{ text: systemPrompt }] },
+          contents: [{ parts: [{ text: `${systemInstruction}\n\nMúsica solicitada: ${promptText}` }] }],
           generationConfig: {
-            responseMimeType: "application/json"
+            temperature: 0.4,
+            responseMimeType: 'application/json'
           }
         })
       }
     );
 
     const data = await response.json();
-
     if (!response.ok) {
-      const apiMsg = data?.error?.message || "Erro na comunicação com a API.";
-      throw new Error(apiMsg);
+      throw new Error(data.error?.message || 'Erro ao conectar com a API do Gemini.');
     }
 
-    let rawText = data.candidates[0].content.parts[0].text;
-    rawText = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
-    const songJson = JSON.parse(rawText);
+    const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const cleanJson = rawText.replace(/```json|```/g, '').trim();
+    const songData = JSON.parse(cleanJson);
 
-    const validNotes = (songJson.notes || [])
-      .map(n => ({
-        note: String(n.note || '').trim().toUpperCase(),
-        duration: String(n.duration || '4').trim()
-      }))
-      .filter(n => NOTE_FREQUENCIES[n.note]);
-
-    if (validNotes.length === 0) {
-      throw new Error("A IA não retornou notas válidas para esta música.");
+    if (!songData.notes || !Array.isArray(songData.notes)) {
+      throw new Error('Formato de partitura inválido retornado pela IA.');
     }
 
-    currentSongData = {
-      title: songJson.title || songPrompt,
-      notes: validNotes
-    };
-
-    if (songJson.bpm) {
-      const clampedBpm = Math.min(220, Math.max(40, parseInt(songJson.bpm, 10) || 110));
-      document.getElementById('tempo').value = clampedBpm;
-      document.getElementById('bpm-display').innerText = clampedBpm;
-    }
-
-    document.getElementById('song-title-display').innerText = currentSongData.title;
-    renderFullSheetMusic(currentSongData.notes);
-    statusEl.innerText = `✅ Partitura de "${currentSongData.title}" gerada com ${validNotes.length} notas! Clique em Tocar.`;
-
-  } catch (error) {
-    console.error("Erro ao gerar música:", error);
-    statusEl.innerText = `❌ Erro: ${error.message}`;
+    localStorage.setItem('gemini_piano_api_key', apiKey);
+    renderSheet(songData);
+    startPlayback();
+  } catch (err) {
+    statusBar.textContent = `❌ Erro: ${err.message}`;
   } finally {
-    generateBtn.disabled = false;
-    generateBtn.innerText = "Gerar Partitura";
-  }
-}
-
-// ============================================================================
-// 7. CONTROLES DE REPRODUÇÃO (PLAY, PAUSE, STOP)
-// ============================================================================
-function startPlayback() {
-  if (isPlaying) return;
-  initAudio();
-  isPlaying = true;
-
-  const sequence = currentSongData.notes;
-  const sheetWrapper = document.getElementById('sheet-scroll');
-  document.getElementById('status-message').innerText = `▶ Tocando: ${currentSongData.title}`;
-
-  function playStep() {
-    if (!isPlaying) return;
-
-    if (currentIndex >= sequence.length) {
-      stopPlayback();
-      document.getElementById('status-message').innerText = `⏹ Música finalizada.`;
-      return;
-    }
-
-    const bpm = parseInt(document.getElementById('tempo').value, 10);
-    const beatMs = (60 / bpm) * 1000;
-    const item = sequence[currentIndex];
-
-    const durationMultiplier =
-      item.duration === '2' ? 2 :
-      item.duration === '8' ? 0.5 :
-      item.duration === '16' ? 0.25 : 1;
-
-    const noteDurationMs = beatMs * durationMultiplier;
-
-    playPianoNote(item.note, noteDurationMs / 1000);
-    highlightPianoKey(item.note, noteDurationMs * 0.85);
-    highlightSheetNote(currentIndex);
-
-    const maxScroll = sheetWrapper.scrollWidth - sheetWrapper.clientWidth;
-    if (maxScroll > 0 && sequence.length > 1) {
-      const progress = currentIndex / (sequence.length - 1);
-      sheetWrapper.scrollLeft = progress * maxScroll;
-    }
-
-    currentIndex++;
-    timeoutId = setTimeout(playStep, noteDurationMs);
-  }
-
-  playStep();
-}
-
-function pausePlayback() {
-  isPlaying = false;
-  clearTimeout(timeoutId);
-  document.getElementById('status-message').innerText = `❚❚ Pausado na nota ${currentIndex + 1}.`;
-}
-
-function stopPlayback() {
-  isPlaying = false;
-  clearTimeout(timeoutId);
-  currentIndex = 0;
-  highlightSheetNote(-1);
-  document.getElementById('sheet-scroll').scrollLeft = 0;
-  document.getElementById('status-message').innerText = `◼ Parado.`;
-}
-
-// ============================================================================
-// 8. EVENTOS DA INTERFACE
-// ============================================================================
-window.addEventListener('DOMContentLoaded', () => {
-  renderFiveOctavePiano();
-  document.getElementById('song-title-display').innerText = currentSongData.title;
-  renderFullSheetMusic(currentSongData.notes);
-
-  const savedKey = localStorage.getItem("gemini_api_key");
-  const apiKeyInput = document.getElementById('api-key-input');
-  if (savedKey) {
-    apiKeyInput.value = savedKey;
-    document.getElementById('status-message').innerText = "🔑 Chave API carregada com sucesso do seu navegador. Pronto para gerar músicas!";
+    btn.disabled = false;
   }
 });
 
-// Bloco atualizado do botão btn-save-key sem exigência de "AIza"
-document.getElementById('btn-save-key').addEventListener('click', () => {
-  const keyVal = document.getElementById('api-key-input').value.trim();
-  if (keyVal.length > 10) {
-    localStorage.setItem("gemini_api_key", keyVal);
-    document.getElementById('status-message').innerText = "✅ Chave API salva com segurança no seu navegador!";
-  } else {
-    alert("Por favor, cole uma chave de API válida.");
-  }
-});
-
-// Botão para Mostrar / Ocultar Chave
-document.getElementById('btn-toggle-key').addEventListener('click', () => {
-  const input = document.getElementById('api-key-input');
-  input.type = input.type === 'password' ? 'text' : 'password';
-});
-
-document.getElementById('song-select').addEventListener('change', (e) => {
-  stopPlayback();
-  currentSongData = PRESET_SONGS[e.target.value];
-  document.getElementById('song-title-display').innerText = currentSongData.title;
-  renderFullSheetMusic(currentSongData.notes);
-});
-
-const searchForm = document.getElementById('search-form');
-if (searchForm) {
-  searchForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const prompt = document.getElementById('song-search').value.trim();
-    if (prompt) generateSongWithAI(prompt);
-  });
-}
-
-document.getElementById('btn-play').addEventListener('click', startPlayback);
-document.getElementById('btn-pause').addEventListener('click', pausePlayback);
-document.getElementById('btn-stop').addEventListener('click', stopPlayback);
-
-document.getElementById('tempo').addEventListener('input', (e) => {
-  document.getElementById('bpm-display').innerText = e.target.value;
-});
+// Inicialização
+buildPiano();
+renderSheet(PRESETS.fur_elise);
+setTimeout(() => scrollToOctave(4), 100);
