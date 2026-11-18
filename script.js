@@ -1,6 +1,6 @@
 /* ==========================================================
    PASSO 1: CONFIGURAÇÃO DA WEB AUDIO API E SINTETIZADOR
-   ================================================---------- */
+   ========================================================== */
 let audioCtx = null;
 
 function getAudioCtx() {
@@ -59,21 +59,21 @@ function playTone(note, durationSec = 0.5) {
   highlightKey(note, durationSec * 1000);
 }
 
-
 /* ==========================================================
    PASSO 2: CONSTRUÇÃO DINÂMICA DAS 61 TECLAS (C2 a C7)
-   ================================================---------- */
+   ========================================================== */
 const pianoKeysEl = document.getElementById('pianoKeys');
 const keyElements = {};
 
 function buildPiano() {
+  if (!pianoKeysEl) return;
   pianoKeysEl.innerHTML = '';
   let whiteIndex = 0;
   const whiteWidth = 42;
 
   for (let oct = 2; oct <= 7; oct++) {
     for (let i = 0; i < NOTE_NAMES.length; i++) {
-      if (oct === 7 && i > 0) break; // Para em C7
+      if (oct === 7 && i > 0) break;
       const note = NOTE_NAMES[i] + oct;
       const isBlack = note.includes('#');
 
@@ -110,10 +110,9 @@ function scrollToOctave(oct) {
   if (el) el.scrollIntoView({ behavior: 'smooth', inline: 'start' });
 }
 
-
 /* ==========================================================
    PASSO 3: SUPORTE AO TECLADO FÍSICO DO COMPUTADOR
-   ================================================---------- */
+   ========================================================== */
 const KEYBOARD_MAP = {
   a: 'C4', w: 'C#4', s: 'D4', e: 'D#4', d: 'E4',
   f: 'F4', t: 'F#4', g: 'G4', y: 'G#4', h: 'A4',
@@ -126,10 +125,9 @@ window.addEventListener('keydown', (e) => {
   if (note && !e.repeat) playTone(note, 0.5);
 });
 
-
 /* ==========================================================
    PASSO 4: REPERTÓRIO DE MÚSICAS CLÁSSICAS PRONTAS (OFFLINE)
-   ================================================---------- */
+   ========================================================== */
 const PRESETS = {
   fur_elise: {
     title: 'Für Elise - Ludwig van Beethoven',
@@ -165,27 +163,29 @@ const PRESETS = {
   }
 };
 
-
 /* ==========================================================
    PASSO 5: RENDERIZAÇÃO E EXIBIÇÃO DA PARTITURA NA TELA
-   ================================================---------- */
+   ========================================================== */
 let currentSong = PRESETS.fur_elise;
 let isPlaying = false;
 let playTimers = [];
 
 const notesContainer = document.getElementById('notesContainer');
 const songTitleEl = document.getElementById('songTitle');
-const statusBar = document.getElementById('statusBar');
+const statusMsg = document.getElementById('status-message');
 const speedSlider = document.getElementById('speedSlider');
 const speedValue = document.getElementById('speedValue');
 
-speedSlider.addEventListener('input', () => {
-  speedValue.textContent = `${parseFloat(speedSlider.value).toFixed(1)}x`;
-});
+if (speedSlider) {
+  speedSlider.addEventListener('input', () => {
+    if (speedValue) speedValue.textContent = `${parseFloat(speedSlider.value).toFixed(1)}x`;
+  });
+}
 
 function renderSheet(song) {
   currentSong = song;
-  songTitleEl.textContent = song.title;
+  if (songTitleEl) songTitleEl.textContent = song.title;
+  if (!notesContainer) return;
   notesContainer.innerHTML = '';
   song.notes.forEach(([note], idx) => {
     const pill = document.createElement('span');
@@ -197,10 +197,9 @@ function renderSheet(song) {
   });
 }
 
-
 /* ==========================================================
    PASSO 6: MOTOR DE REPRODUÇÃO E CONTROLES (PLAY / STOP / TEMPO)
-   ================================================---------- */
+   ========================================================== */
 function stopPlayback() {
   isPlaying = false;
   playTimers.forEach(clearTimeout);
@@ -211,10 +210,10 @@ function stopPlayback() {
 function startPlayback() {
   stopPlayback();
   isPlaying = true;
-  const speed = parseFloat(speedSlider.value) || 1.0;
+  const speed = speedSlider ? (parseFloat(speedSlider.value) || 1.0) : 1.0;
   let elapsed = 0;
 
-  statusBar.textContent = `🎵 Tocando: ${currentSong.title}`;
+  if (statusMsg) statusMsg.innerText = `🎵 Tocando: ${currentSong.title}`;
 
   currentSong.notes.forEach(([note, dur], idx) => {
     const adjustedDur = dur / speed;
@@ -232,7 +231,7 @@ function startPlayback() {
       if (idx === currentSong.notes.length - 1) {
         setTimeout(() => {
           isPlaying = false;
-          statusBar.textContent = `✅ Execução concluída: ${currentSong.title}`;
+          if (statusMsg) statusMsg.innerText = `✅ Execução concluída: ${currentSong.title}`;
         }, adjustedDur * 1000);
       }
     }, elapsed * 1000);
@@ -242,111 +241,123 @@ function startPlayback() {
   });
 }
 
-document.getElementById('presetSelect').addEventListener('change', (e) => {
-  stopPlayback();
-  renderSheet(PRESETS[e.target.value]);
-});
+const presetSelect = document.getElementById('presetSelect');
+if (presetSelect) {
+  presetSelect.addEventListener('change', (e) => {
+    stopPlayback();
+    if (PRESETS[e.target.value]) renderSheet(PRESETS[e.target.value]);
+  });
+}
 
-document.getElementById('playBtn').addEventListener('click', startPlayback);
-document.getElementById('stopBtn').addEventListener('click', () => {
-  stopPlayback();
-  statusBar.textContent = '⏹ Reprodução parada.';
-});
+const playBtn = document.getElementById('playBtn');
+if (playBtn) playBtn.addEventListener('click', startPlayback);
 
-
-/* ==========================================================
-   PASSO 7: GERENCIAMENTO E ARMAZENAMENTO DA CHAVE DE API (LOCALSTORAGE)
-   ================================================---------- */
-const apiKeyInput = document.getElementById('apiKeyInput');
-const savedKey = localStorage.getItem('gemini_piano_api_key');
-if (savedKey) apiKeyInput.value = savedKey;
-
-document.getElementById('saveKeyBtn').addEventListener('click', () => {
-  const key = apiKeyInput.value.trim();
-  if (!key) {
-    statusBar.textContent = '⚠️ Cole uma chave de API válida antes de salvar.';
-    return;
-  }
-  localStorage.setItem('gemini_piano_api_key', key);
-  statusBar.textContent = '✅ Chave de API salva no navegador com sucesso!';
-});
-
-document.getElementById('clearKeyBtn').addEventListener('click', () => {
-  localStorage.removeItem('gemini_piano_api_key');
-  apiKeyInput.value = '';
-  statusBar.textContent = '🗑️ Chave de API removida.';
-});
-
+const stopBtn = document.getElementById('stopBtn');
+if (stopBtn) {
+  stopBtn.addEventListener('click', () => {
+    stopPlayback();
+    if (statusMsg) statusMsg.innerText = '⏹ Reprodução parada.';
+  });
+}
 
 /* ==========================================================
-   PASSO 8: INTEGRAÇÃO COM A API DO GOOGLE GEMINI (GERAÇÃO DE MÚSICA)
-   ================================================---------- */
-document.getElementById('generateBtn').addEventListener('click', async () => {
-  const apiKey = apiKeyInput.value.trim();
-  const promptText = document.getElementById('aiPromptInput').value.trim();
+   PASSO 7: GERENCIAMENTO DA CHAVE DE API (LOCALSTORAGE)
+   ========================================================== */
+const apiKeyInput = document.getElementById('api-key-input');
+const savedKey = localStorage.getItem("gemini_api_key") || localStorage.getItem('gemini_piano_api_key');
+if (savedKey && apiKeyInput) apiKeyInput.value = savedKey;
 
-  if (!apiKey) {
-    statusBar.textContent = '⚠️ Insira sua chave de API do Google AI Studio no campo acima.';
-    return;
+document.getElementById('btn-save-key').addEventListener('click', () => {
+  const keyVal = document.getElementById('api-key-input').value.trim();
+  if (keyVal.length > 10) {
+    localStorage.setItem("gemini_api_key", keyVal);
+    document.getElementById('status-message').innerText = "✅ Chave API salva com segurança no seu navegador!";
+  } else {
+    alert("Por favor, cole uma chave de API válida.");
   }
-  if (!promptText) {
-    statusBar.textContent = '⚠️ Digite o nome de uma música ou estilo para a IA compor.';
-    return;
-  }
+});
 
-  stopPlayback();
-  const btn = document.getElementById('generateBtn');
-  btn.disabled = true;
-  statusBar.textContent = `⏳ Compondo "${promptText}" com Gemini...`;
+const clearKeyBtn = document.getElementById('clearKeyBtn');
+if (clearKeyBtn) {
+  clearKeyBtn.addEventListener('click', () => {
+    localStorage.removeItem("gemini_api_key");
+    localStorage.removeItem('gemini_piano_api_key');
+    if (apiKeyInput) apiKeyInput.value = '';
+    if (statusMsg) statusMsg.innerText = '🗑️ Chave de API removida.';
+  });
+}
 
-  const systemInstruction = `Você é um pianista e compositor. Crie uma partitura completa e fiel para piano da música solicitada usando notas entre C2 e C7 (ex: "C4", "F#4", "A4", "D5").
+/* ==========================================================
+   PASSO 8: INTEGRAÇÃO COM A API DO GOOGLE GEMINI (GERAÇÃO)
+   ========================================================== */
+const generateBtn = document.getElementById('generateBtn');
+if (generateBtn) {
+  generateBtn.addEventListener('click', async () => {
+    const apiKey = apiKeyInput ? apiKeyInput.value.trim() : (localStorage.getItem("gemini_api_key") || '');
+    const promptInput = document.getElementById('aiPromptInput');
+    const promptText = promptInput ? promptInput.value.trim() : '';
+
+    if (!apiKey) {
+      if (statusMsg) statusMsg.innerText = '⚠️ Insira sua chave de API do Google AI Studio no campo acima.';
+      return;
+    }
+    if (!promptText) {
+      if (statusMsg) statusMsg.innerText = '⚠️ Digite o nome de uma música ou estilo para a IA compor.';
+      return;
+    }
+
+    stopPlayback();
+    generateBtn.disabled = true;
+    if (statusMsg) statusMsg.innerText = `⏳ Compondo "${promptText}" com Gemini...`;
+
+    const systemInstruction = `Você é um pianista e compositor. Crie uma partitura completa e fiel para piano da música solicitada usando notas entre C2 e C7 (ex: "C4", "F#4", "A4", "D5").
 Responda APENAS com um JSON válido neste formato exato, sem markdown e sem texto extra:
 {"title":"Nome da Música - Compositor","notes":[["C4",0.4],["E4",0.4],["G4",0.6]]}
 Onde cada item em "notes" é [nota, duracao_em_segundos]. Gere entre 24 e 64 notas.`;
 
-  try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: `${systemInstruction}\n\nMúsica solicitada: ${promptText}` }] }],
-          generationConfig: {
-            temperature: 0.4,
-            responseMimeType: 'application/json'
-          }
-        })
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: `${systemInstruction}\n\nMúsica solicitada: ${promptText}` }] }],
+            generationConfig: {
+              temperature: 0.4,
+              responseMimeType: 'application/json'
+            }
+          })
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error?.message || 'Erro ao conectar com a API do Gemini.');
       }
-    );
 
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.error?.message || 'Erro ao conectar com a API do Gemini.');
+      const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      const cleanJson = rawText.replace(/```json|```/g, '').trim();
+      const songData = JSON.parse(cleanJson);
+
+      if (!songData.notes || !Array.isArray(songData.notes)) {
+        throw new Error('Formato de partitura inválido retornado pela IA.');
+      }
+
+      localStorage.setItem("gemini_api_key", apiKey);
+      renderSheet(songData);
+      startPlayback();
+    } catch (err) {
+      if (statusMsg) statusMsg.innerText = `❌ Erro: ${err.message}`;
+    } finally {
+      generateBtn.disabled = false;
     }
-
-    const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    const cleanJson = rawText.replace(/```json|```/g, '').trim();
-    const songData = JSON.parse(cleanJson);
-
-    if (!songData.notes || !Array.isArray(songData.notes)) {
-      throw new Error('Formato de partitura inválido retornado pela IA.');
-    }
-
-    localStorage.setItem('gemini_piano_api_key', apiKey);
-    renderSheet(songData);
-    startPlayback();
-  } catch (err) {
-    statusBar.textContent = `❌ Erro: ${err.message}`;
-  } finally {
-    btn.disabled = false;
-  }
-});
-
+  });
+}
 
 /* ==========================================================
    INICIALIZAÇÃO DO APLICATIVO
-   ================================================---------- */
+   ========================================================== */
 buildPiano();
 renderSheet(PRESETS.fur_elise);
 setTimeout(() => scrollToOctave(4), 100);
