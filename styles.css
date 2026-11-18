@@ -1,3 +1,6 @@
+/* ==========================================================
+   PASSO 1: VARIÁVEIS GLOBAIS DE CORES E TEMA
+   ========================================================== */
 :root {
   --bg-main: #0f172a;
   --bg-card: #1e293b;
@@ -12,6 +15,9 @@
   --key-active: #38bdf8;
 }
 
+/* ==========================================================
+   PASSO 2: RESET GERAL E ESTILOS DA PÁGINA
+   ========================================================== */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -29,6 +35,9 @@ body {
   gap: 20px;
 }
 
+/* ==========================================================
+   PASSO 3: CABEÇALHO E ESTRUTURA PRINCIPAL (CONTAINER)
+   ========================================================== */
 header {
   text-align: center;
   padding: 10px 0;
@@ -65,6 +74,9 @@ section {
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
 }
 
+/* ==========================================================
+   PASSO 4: PAINEL DE CONTROLES, INPUTS E BOTÕES
+   ========================================================== */
 .grid-controls {
   display: grid;
   grid-template-columns: 1fr;
@@ -169,6 +181,9 @@ button.danger:hover {
   background: #dc2626;
 }
 
+/* ==========================================================
+   PASSO 5: BARRA DE STATUS E MENSAGENS DO SISTEMA
+   ========================================================== */
 .status-bar {
   margin-top: 14px;
   padding: 10px 14px;
@@ -179,7 +194,9 @@ button.danger:hover {
   color: #e2e8f0;
 }
 
-/* Partitura */
+/* ==========================================================
+   PASSO 6: SEÇÃO DE PARTITURAS E NOTAS (PILLS)
+   ========================================================== */
 .sheet-header {
   display: flex;
   justify-content: space-between;
@@ -249,7 +266,9 @@ button.danger:hover {
   box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
 }
 
-/* Piano */
+/* ==========================================================
+   PASSO 7: CABEÇALHO DO TECLADO E NAVEGAÇÃO DE OITAVAS
+   ========================================================== */
 .piano-header {
   display: flex;
   justify-content: space-between;
@@ -281,6 +300,9 @@ button.danger:hover {
   border: 1px solid var(--border);
 }
 
+/* ==========================================================
+   PASSO 8: TECLAS DO PIANO (BRANCAS, PRETAS E ESTADOS)
+   ========================================================== */
 .piano-keys {
   position: relative;
   display: flex;
