@@ -12,7 +12,6 @@
   --key-black: #0f172a;
 }
 
-/* CORRIGIDO: alterado de "-" para "*" */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -68,6 +67,38 @@ header p {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
+/* Configuração da Chave API */
+.api-config-bar {
+  background-color: #0d111a;
+  border: 1px dashed var(--surface-border);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.api-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.api-input-group input {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  border: 1px solid var(--surface-border);
+  background-color: var(--bg-black);
+  color: var(--white);
+  outline: none;
+}
+
+.api-input-group input:focus {
+  border-color: var(--blue-primary);
+}
+
 /* Grid de Controles */
 .controls-grid {
   display: grid;
@@ -100,9 +131,8 @@ label {
   gap: 10px;
 }
 
-/* Ajuste para telas de celular */
 @media (max-width: 520px) {
-  .search-box {
+  .search-box, .api-input-group {
     flex-direction: column;
   }
 }
@@ -158,13 +188,13 @@ button {
 }
 
 .btn-secondary {
-  background-color: var(--white);
-  color: var(--bg-black);
-  border: 1px solid var(--white);
+  background-color: #334155;
+  color: var(--white);
+  border: 1px solid #475569;
 }
 
 .btn-secondary:hover {
-  background-color: #e2e8f0;
+  background-color: #475569;
 }
 
 .btn-outline {
@@ -255,7 +285,6 @@ input[type="range"] {
   border: 2px solid var(--blue-primary);
 }
 
-/* Estilização da barra de rolagem */
 .sheet-scroll-wrapper::-webkit-scrollbar,
 .piano-wrapper::-webkit-scrollbar {
   height: 10px;
