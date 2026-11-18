@@ -16,9 +16,9 @@
   </header>
 
   <main>
+    <!-- Seção de Controles e API -->
     <section>
       <div class="grid-controls">
-        <!-- Chave API (Aceita AQ. e AIzaSy) -->
         <div class="control-group full-width">
           <label for="api-key-input">🔑 Chave de API do Google AI Studio (aceita AQ. ou AIzaSy)</label>
           <div class="input-row">
@@ -28,16 +28,14 @@
           </div>
         </div>
 
-        <!-- Gerar com IA -->
         <div class="control-group">
           <label for="aiPromptInput">✨ Compor música com IA (Gemini)</label>
           <div class="input-row">
-            <input type="text" id="aiPromptInput" placeholder="Ex: Tema de Harry Potter, Parabéns pra Você, Asa Branca..." />
+            <input type="text" id="aiPromptInput" placeholder="Ex: Tema de Harry Potter, Parabéns..." />
             <button id="generateBtn">Compor com IA</button>
           </div>
         </div>
 
-        <!-- Clássicos -->
         <div class="control-group">
           <label for="presetSelect">🎼 Clássicos Prontos (Offline)</label>
           <div class="input-row">
@@ -58,7 +56,7 @@
       </div>
     </section>
 
-    <!-- Partitura -->
+    <!-- Seção de Partitura -->
     <section>
       <div class="sheet-header">
         <div>
@@ -73,7 +71,7 @@
       <div id="notesContainer" class="notes-container"></div>
     </section>
 
-    <!-- Teclado 5 Oitavas -->
+    <!-- Seção do Teclado (61 Teclas) -->
     <section>
       <div class="piano-header">
         <span><strong>Teclado Completo:</strong> 5 Oitavas (C2 – C7) • Teclas físicas A–L tocam a oitava central</span>
