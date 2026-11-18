@@ -3,86 +3,96 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Piano Virtual & Leitor de Partituras</title>
-
-  <!-- Fontes do Google -->
+  <title>Piano Virtual 5 Oitavas & Partituras IA</title>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-  <!-- Estilo externo -->
-  <link rel="stylesheet" href="style.css">
-
-  <!-- Biblioteca VexFlow para desenhar as partituras -->
-  <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Biblioteca VexFlow com defer para garantir ordem de carregamento -->
+  <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js" defer></script>
+  <script src="script.js" defer></script>
 </head>
 <body>
 
   <header>
-    <h1>🎹 Piano Virtual & Partituras</h1>
-    <p>Escolha uma música, crie suas notas ou reproduza no teclado!</p>
+    <div class="header-content">
+      <h1>🎹 Piano Studio 5 Oitavas</h1>
+      <p>Peça qualquer música para a IA compor a partitura completa ou toque nas 61 teclas</p>
+    </div>
   </header>
 
-  <div class="container">
+  <main class="container">
     
-    <!-- Painel de Controles e Entrada -->
-    <div class="card">
+    <!-- Painel de Pedidos e Controles -->
+    <section class="card control-panel">
       <div class="controls-grid">
         
-        <!-- Seleção de Músicas Pré-carregadas -->
+        <!-- Biblioteca do Site -->
         <div class="form-group">
-          <label for="song-select">Selecione uma Música:</label>
+          <label for="song-select">Biblioteca Clássica (Músicas Completas):</label>
           <select id="song-select">
-            <option value="fur_elise">Für Elise - Beethoven</option>
-            <option value="ode_to_joy">Ode à Alegria - Beethoven</option>
-            <option value="twinkle">Brilha, Brilha Estrelinha</option>
-            <option value="mario">Super Mario - Tema</option>
+            <option value="fur_elise">Für Elise (Completa) - Beethoven</option>
+            <option value="ode_to_joy">Ode à Alegria (Completa) - Beethoven</option>
+            <option value="canon_d">Cânone em Ré - Pachelbel</option>
+            <option value="nocturne">Noturno Op. 9 Nº 2 - Chopin</option>
           </select>
         </div>
 
-        <!-- Entrada de Notas Personalizadas -->
+        <!-- Gerador de Qualquer Música via IA -->
         <div class="form-group">
-          <label for="custom-notes">Ou digite suas próprias notas (ex: C4 E4 G4 C5):</label>
-          <input type="text" id="custom-notes" placeholder="Ex: C4 D4 E4 F4 G4 A4 B4 C5">
+          <label for="song-search">Pedir Qualquer Música (IA):</label>
+          <form id="search-form" class="search-box">
+            <input type="text" id="song-search" placeholder="Ex: Boate Azul, Harry Potter, Interstellar..." autocomplete="off">
+            <button type="submit" id="btn-generate" class="btn-primary">Gerar Partitura</button>
+          </form>
         </div>
 
       </div>
 
-      <!-- Botão para carregar notas digitadas -->
-      <div class="btn-group">
-        <button id="btn-load-custom">Carregar Notas Digitadas</button>
-      </div>
-
-      <!-- Controles de Player e Andamento -->
-      <div class="playback-controls">
+      <!-- Barra de Reprodução -->
+      <div class="playback-bar">
         <div class="btn-group">
-          <button id="btn-play">▶ Tocar</button>
-          <button id="btn-stop" class="btn-danger">◼ Parar</button>
+          <button type="button" id="btn-play" class="btn-primary">▶ Tocar</button>
+          <button type="button" id="btn-pause" class="btn-secondary">❚❚ Pausar</button>
+          <button type="button" id="btn-stop" class="btn-outline">◼ Parar</button>
         </div>
 
-        <div class="tempo-container">
-          <label for="tempo">Velocidade (BPM): <span id="bpm-display">120</span></label>
-          <input type="range" id="tempo" min="40" max="240" value="120">
+        <div class="tempo-control">
+          <label for="tempo">Andamento: <strong id="bpm-display">110</strong> BPM</label>
+          <input type="range" id="tempo" min="40" max="220" value="110">
         </div>
       </div>
-    </div>
 
-    <!-- Área de Exibição da Partitura -->
-    <div class="card">
-      <label>Partitura em Tempo Real:</label>
-      <div id="sheet-music-container"></div>
-    </div>
+      <!-- Barra de Status / Carregamento -->
+      <div id="status-message" class="status-bar" role="status" aria-live="polite">Pronto para tocar.</div>
+    </section>
 
-    <!-- Teclado Visual do Piano -->
-    <div class="card piano-container">
-      <div class="piano" id="piano">
-        <!-- O teclado é gerado automaticamente pelo JavaScript -->
+    <!-- Área da Partitura Completa -->
+    <section class="card sheet-section">
+      <div class="sheet-header">
+        <span class="badge">PARTITURA COMPLETA</span>
+        <h2 id="song-title-display">Für Elise - Ludwig van Beethoven</h2>
       </div>
-    </div>
+      <div class="sheet-scroll-wrapper" id="sheet-scroll">
+        <div id="sheet-music-container"></div>
+      </div>
+    </section>
 
-  </div>
+    <!-- Teclado de 5 Oitavas (C2 até C7 - 61 teclas) -->
+    <section class="card piano-section">
+      <div class="piano-info">
+        <span>Teclado Completo: 5 Oitavas (C2 – C7)</span>
+        <span class="hint">Arraste a barra abaixo para navegar pelas oitavas</span>
+      </div>
+      <div class="piano-wrapper" id="piano-wrapper">
+        <div class="piano" id="piano"></div>
+      </div>
+    </section>
 
-  <!-- Script JavaScript -->
-  <script src="script.js"></script>
+  </main>
+
 </body>
 </html>
