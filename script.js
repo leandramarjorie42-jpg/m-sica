@@ -1,5 +1,8 @@
-// --- ÁUDIO (Web Audio API) ---
+/* ==========================================================
+   PASSO 1: CONFIGURAÇÃO DA WEB AUDIO API E SINTETIZADOR
+   ================================================---------- */
 let audioCtx = null;
+
 function getAudioCtx() {
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -56,7 +59,10 @@ function playTone(note, durationSec = 0.5) {
   highlightKey(note, durationSec * 1000);
 }
 
-// --- CONSTRUÇÃO DO PIANO (C2 a C7 - 61 Teclas) ---
+
+/* ==========================================================
+   PASSO 2: CONSTRUÇÃO DINÂMICA DAS 61 TECLAS (C2 a C7)
+   ================================================---------- */
 const pianoKeysEl = document.getElementById('pianoKeys');
 const keyElements = {};
 
@@ -67,7 +73,7 @@ function buildPiano() {
 
   for (let oct = 2; oct <= 7; oct++) {
     for (let i = 0; i < NOTE_NAMES.length; i++) {
-      if (oct === 7 && i > 0) break; // Termina em C7
+      if (oct === 7 && i > 0) break; // Para em C7
       const note = NOTE_NAMES[i] + oct;
       const isBlack = note.includes('#');
 
@@ -104,7 +110,10 @@ function scrollToOctave(oct) {
   if (el) el.scrollIntoView({ behavior: 'smooth', inline: 'start' });
 }
 
-// Teclado físico (Oitava 4)
+
+/* ==========================================================
+   PASSO 3: SUPORTE AO TECLADO FÍSICO DO COMPUTADOR
+   ================================================---------- */
 const KEYBOARD_MAP = {
   a: 'C4', w: 'C#4', s: 'D4', e: 'D#4', d: 'E4',
   f: 'F4', t: 'F#4', g: 'G4', y: 'G#4', h: 'A4',
@@ -117,7 +126,10 @@ window.addEventListener('keydown', (e) => {
   if (note && !e.repeat) playTone(note, 0.5);
 });
 
-// --- PARTITURAS PRONTAS ---
+
+/* ==========================================================
+   PASSO 4: REPERTÓRIO DE MÚSICAS CLÁSSICAS PRONTAS (OFFLINE)
+   ================================================---------- */
 const PRESETS = {
   fur_elise: {
     title: 'Für Elise - Ludwig van Beethoven',
@@ -153,6 +165,10 @@ const PRESETS = {
   }
 };
 
+
+/* ==========================================================
+   PASSO 5: RENDERIZAÇÃO E EXIBIÇÃO DA PARTITURA NA TELA
+   ================================================---------- */
 let currentSong = PRESETS.fur_elise;
 let isPlaying = false;
 let playTimers = [];
@@ -181,6 +197,10 @@ function renderSheet(song) {
   });
 }
 
+
+/* ==========================================================
+   PASSO 6: MOTOR DE REPRODUÇÃO E CONTROLES (PLAY / STOP / TEMPO)
+   ================================================---------- */
 function stopPlayback() {
   isPlaying = false;
   playTimers.forEach(clearTimeout);
@@ -233,7 +253,10 @@ document.getElementById('stopBtn').addEventListener('click', () => {
   statusBar.textContent = '⏹ Reprodução parada.';
 });
 
-// --- GERENCIAMENTO DA API KEY ---
+
+/* ==========================================================
+   PASSO 7: GERENCIAMENTO E ARMAZENAMENTO DA CHAVE DE API (LOCALSTORAGE)
+   ================================================---------- */
 const apiKeyInput = document.getElementById('apiKeyInput');
 const savedKey = localStorage.getItem('gemini_piano_api_key');
 if (savedKey) apiKeyInput.value = savedKey;
@@ -254,7 +277,10 @@ document.getElementById('clearKeyBtn').addEventListener('click', () => {
   statusBar.textContent = '🗑️ Chave de API removida.';
 });
 
-// --- INTEGRAÇÃO COM GEMINI API ---
+
+/* ==========================================================
+   PASSO 8: INTEGRAÇÃO COM A API DO GOOGLE GEMINI (GERAÇÃO DE MÚSICA)
+   ================================================---------- */
 document.getElementById('generateBtn').addEventListener('click', async () => {
   const apiKey = apiKeyInput.value.trim();
   const promptText = document.getElementById('aiPromptInput').value.trim();
@@ -317,7 +343,10 @@ Onde cada item em "notes" é [nota, duracao_em_segundos]. Gere entre 24 e 64 not
   }
 });
 
-// Inicialização
+
+/* ==========================================================
+   INICIALIZAÇÃO DO APLICATIVO
+   ================================================---------- */
 buildPiano();
 renderSheet(PRESETS.fur_elise);
 setTimeout(() => scrollToOctave(4), 100);
