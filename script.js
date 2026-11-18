@@ -1,4 +1,4 @@
-// --- 1. CONFIGURAÇÃO DE FREQUÊNCIAS E MÚSICAS COMPLETAS ---
+// --- 1. FREQUÊNCIAS E MÚSICAS PRÉ-DEFINIDAS ---
 
 const NOTE_FREQUENCIES = {
   'C4': 261.63, 'C#4': 277.18, 'D4': 293.66, 'D#4': 311.13,
@@ -9,68 +9,37 @@ const NOTE_FREQUENCIES = {
   'G#5': 830.61, 'A5': 880.00, 'A#5': 932.33, 'B5': 987.77
 };
 
-// Partituras pré-carregadas completas por seções
 const PRESET_SONGS = {
-  fur_elise: {
-    title: "Für Elise - Ludwig van Beethoven",
-    notes: [
-      { note: 'E5', duration: '8' }, { note: 'D#5', duration: '8' }, { note: 'E5', duration: '8' }, { note: 'D#5', duration: '8' },
-      { note: 'E5', duration: '8' }, { note: 'B4', duration: '8' }, { note: 'D5', duration: '8' }, { note: 'C5', duration: '8' },
-      { note: 'A4', duration: '4' }, { note: 'C4', duration: '8' }, { note: 'E4', duration: '8' }, { note: 'A4', duration: '8' },
-      { note: 'B4', duration: '4' }, { note: 'E4', duration: '8' }, { note: 'G#4', duration: '8' }, { note: 'B4', duration: '8' },
-      { note: 'C5', duration: '4' }, { note: 'E4', duration: '8' }, { note: 'E5', duration: '8' }, { note: 'D#5', duration: '8' },
-      { note: 'E5', duration: '8' }, { note: 'D#5', duration: '8' }, { note: 'E5', duration: '8' }, { note: 'B4', duration: '8' },
-      { note: 'D5', duration: '8' }, { note: 'C5', duration: '8' }, { note: 'A4', duration: '2' }
-    ]
-  },
-  ode_to_joy: {
-    title: "Ode à Alegria - Ludwig van Beethoven",
-    notes: [
-      { note: 'E4', duration: '4' }, { note: 'E4', duration: '4' }, { note: 'F4', duration: '4' }, { note: 'G4', duration: '4' },
-      { note: 'G4', duration: '4' }, { note: 'F4', duration: '4' }, { note: 'E4', duration: '4' }, { note: 'D4', duration: '4' },
-      { note: 'C4', duration: '4' }, { note: 'C4', duration: '4' }, { note: 'D4', duration: '4' }, { note: 'E4', duration: '4' },
-      { note: 'E4', duration: '4' }, { note: 'D4', duration: '8' }, { note: 'D4', duration: '2' }
-    ]
-  },
-  mario: {
-    title: "Super Mario Bros - Tema Principal",
-    notes: [
-      { note: 'E5', duration: '8' }, { note: 'E5', duration: '8' }, { note: 'E5', duration: '4' },
-      { note: 'C5', duration: '8' }, { note: 'E5', duration: '4' }, { note: 'G5', duration: '4' },
-      { note: 'G4', duration: '4' }, { note: 'C5', duration: '4' }, { note: 'G4', duration: '4' },
-      { note: 'E4', duration: '4' }, { note: 'A4', duration: '4' }, { note: 'B4', duration: '4' }
-    ]
-  },
-  twinkle: {
-    title: "Brilha, Brilha Estrelinha (Melodia Completa)",
-    notes: [
-      { note: 'C4', duration: '4' }, { note: 'C4', duration: '4' }, { note: 'G4', duration: '4' }, { note: 'G4', duration: '4' },
-      { note: 'A4', duration: '4' }, { note: 'A4', duration: '4' }, { note: 'G4', duration: '2' },
-      { note: 'F4', duration: '4' }, { note: 'F4', duration: '4' }, { note: 'E4', duration: '4' }, { note: 'E4', duration: '4' },
-      { note: 'D4', duration: '4' }, { note: 'D4', duration: '4' }, { note: 'C4', duration: '2' }
-    ]
-  }
+  fur_elise: [
+    { note: 'E5', duration: '8' }, { note: 'D#5', duration: '8' },
+    { note: 'E5', duration: '8' }, { note: 'D#5', duration: '8' },
+    { note: 'E5', duration: '8' }, { note: 'B4', duration: '8' },
+    { note: 'D5', duration: '8' }, { note: 'C5', duration: '8' },
+    { note: 'A4', duration: '4' }
+  ],
+  ode_to_joy: [
+    { note: 'E4', duration: '4' }, { note: 'E4', duration: '4' },
+    { note: 'F4', duration: '4' }, { note: 'G4', duration: '4' },
+    { note: 'G4', duration: '4' }, { note: 'F4', duration: '4' },
+    { note: 'E4', duration: '4' }, { note: 'D4', duration: '4' }
+  ],
+  twinkle: [
+    { note: 'C4', duration: '4' }, { note: 'C4', duration: '4' },
+    { note: 'G4', duration: '4' }, { note: 'G4', duration: '4' },
+    { note: 'A4', duration: '4' }, { note: 'A4', duration: '4' },
+    { note: 'G4', duration: '2' }
+  ],
+  mario: [
+    { note: 'E5', duration: '8' }, { note: 'E5', duration: '8' },
+    { note: 'E5', duration: '8' }, { note: 'C5', duration: '8' },
+    { note: 'E5', duration: '4' }, { note: 'G5', duration: '4' }
+  ]
 };
 
-let currentSongData = PRESET_SONGS.fur_elise;
+let currentSequence = PRESET_SONGS.fur_elise;
 let isPlaying = false;
 let audioCtx = null;
 let currentTimeoutId = null;
-
-// Dicionário para gerar notas a partir de nomes de músicas conhecidas
-const SEARCH_DATABASE = {
-  "parabens": [
-    { note: 'C4', duration: '8' }, { note: 'C4', duration: '8' }, { note: 'D4', duration: '4' }, { note: 'C4', duration: '4' },
-    { note: 'F4', duration: '4' }, { note: 'E4', duration: '2' },
-    { note: 'C4', duration: '8' }, { note: 'C4', duration: '8' }, { note: 'D4', duration: '4' }, { note: 'C4', duration: '4' },
-    { note: 'G4', duration: '4' }, { note: 'F4', duration: '2' }
-  ],
-  "moonlight": [
-    { note: 'C#4', duration: '8' }, { note: 'E4', duration: '8' }, { note: 'G#4', duration: '8' },
-    { note: 'C#4', duration: '8' }, { note: 'E4', duration: '8' }, { note: 'G#4', duration: '8' },
-    { note: 'C#4', duration: '8' }, { note: 'E4', duration: '8' }, { note: 'G#4', duration: '8' }
-  ]
-};
 
 // --- 2. ÁUDIO (Web Audio API) ---
 
@@ -88,9 +57,10 @@ function playSound(pitch, durationSec = 0.5) {
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
-  osc.type = 'triangle';
+  osc.type = 'triangle'; // Som suave estilo piano
   osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
+  // Envelope para timbre de piano
   gain.gain.setValueAtTime(0, audioCtx.currentTime);
   gain.gain.linearRampToValueAtTime(0.8, audioCtx.currentTime + 0.02);
   gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + durationSec);
@@ -102,7 +72,7 @@ function playSound(pitch, durationSec = 0.5) {
   osc.stop(audioCtx.currentTime + durationSec);
 }
 
-// --- 3. CONSTRUÇÃO DO TECLADO ---
+// --- 3. CRIAR O PIANO VISUAL ---
 
 const pianoContainer = document.getElementById('piano');
 
@@ -136,7 +106,7 @@ function highlightKey(note) {
   }
 }
 
-// --- 4. RENDERIZAÇÃO DE PARTITURAS COM MÚLTIPLOS COMPASSOS ---
+// --- 4. PARTITURA (VexFlow) ---
 
 function renderSheetMusic(sequence) {
   const container = document.getElementById('sheet-music-container');
@@ -144,57 +114,40 @@ function renderSheetMusic(sequence) {
 
   const { Renderer, Stave, StaveNote, Voice, Formatter, Accidental } = Vex.Flow;
 
-  // Separa as notas em grupos de 4 notas por compasso
-  const MEASURE_SIZE = 4;
-  const totalMeasures = Math.ceil(sequence.length / MEASURE_SIZE);
-  const staveWidth = 220;
-  const totalWidth = Math.max(750, totalMeasures * staveWidth + 60);
-
   const renderer = new Renderer(container, Renderer.Backends.SVG);
-  renderer.resize(totalWidth, 160);
+  renderer.resize(700, 140);
   const context = renderer.getContext();
 
-  let currentX = 10;
+  const stave = new Stave(10, 10, 680);
+  stave.addClef('treble').addTimeSignature('4/4');
+  stave.setContext(context).draw();
 
-  for (let m = 0; m < totalMeasures; m++) {
-    const measureNotes = sequence.slice(m * MEASURE_SIZE, (m + 1) * MEASURE_SIZE);
-    const stave = new Stave(currentX, 10, staveWidth);
+  const vexNotes = sequence.map(item => {
+    let noteName = item.note.substring(0, item.note.length - 1).toLowerCase();
+    let octave = item.note.slice(-1);
+    let hasAccidental = noteName.includes('#');
 
-    if (m === 0) {
-      stave.addClef('treble').addTimeSignature('4/4');
-    }
+    let keyFormatted = noteName.replace('#', '') + '/' + octave;
 
-    stave.setContext(context).draw();
-
-    const vexNotes = measureNotes.map(item => {
-      let noteName = item.note.substring(0, item.note.length - 1).toLowerCase();
-      let octave = item.note.slice(-1);
-      let hasAccidental = noteName.includes('#');
-
-      let keyFormatted = noteName.replace('#', '') + '/' + octave;
-
-      let staveNote = new StaveNote({
-        keys: [keyFormatted],
-        duration: item.duration || '4'
-      });
-
-      if (hasAccidental) {
-        staveNote.addModifier(new Accidental('#'));
-      }
-
-      return staveNote;
+    let staveNote = new StaveNote({
+      keys: [keyFormatted],
+      duration: item.duration || '4'
     });
 
-    try {
-      const voice = new Voice({ num_beats: vexNotes.length, beat_value: 4 });
-      voice.addTickables(vexNotes);
-      new Formatter().joinAndModifyVoices([voice]).format([voice], staveWidth - 40);
-      voice.draw(context, stave);
-    } catch (e) {
-      Formatter.FormatAndDraw(context, stave, vexNotes);
+    if (hasAccidental) {
+      staveNote.addModifier(new Accidental('#'));
     }
 
-    currentX += staveWidth;
+    return staveNote;
+  });
+
+  try {
+    const voice = new Voice({ num_beats: vexNotes.length, beat_value: 4 });
+    voice.addTickables(vexNotes);
+    new Formatter().joinAndModifyVoices([voice]).format([voice], 600);
+    voice.draw(context, stave);
+  } catch (e) {
+    Formatter.FormatAndDraw(context, stave, vexNotes);
   }
 }
 
@@ -206,17 +159,16 @@ function playSequence() {
 
   const bpm = parseInt(document.getElementById('tempo').value);
   const baseBeatDuration = (60 / bpm) * 1000;
-  const sequence = currentSongData.notes;
 
   let index = 0;
 
   function step() {
-    if (!isPlaying || index >= sequence.length) {
+    if (!isPlaying || index >= currentSequence.length) {
       isPlaying = false;
       return;
     }
 
-    const item = sequence[index];
+    const item = currentSequence[index];
     const noteDurationMult = (item.duration === '8') ? 0.5 : (item.duration === '2') ? 2 : 1;
     const noteTimeMs = baseBeatDuration * noteDurationMult;
 
@@ -235,24 +187,21 @@ function stopSequence() {
   if (currentTimeoutId) clearTimeout(currentTimeoutId);
 }
 
-// --- 6. GERADOR E PROCESSADOR DE PEDIDOS ---
+// --- 6. EVENTOS DA PÁGINA ---
 
-function processSongInput(input) {
-  const cleanInput = input.toLowerCase().trim();
+document.getElementById('song-select').addEventListener('change', (e) => {
+  stopSequence();
+  currentSequence = PRESET_SONGS[e.target.value];
+  renderSheetMusic(currentSequence);
+});
 
-  // 1. Busca por nome no dicionário
-  for (let key in SEARCH_DATABASE) {
-    if (cleanInput.includes(key)) {
-      return {
-        title: `Música Encontrada: "${input}"`,
-        notes: SEARCH_DATABASE[key]
-      };
-    }
-  }
+document.getElementById('btn-load-custom').addEventListener('click', () => {
+  const input = document.getElementById('custom-notes').value.trim();
+  if (!input) return;
 
-  // 2. Processa notas explícitas se digitadas (Ex: C4 D4 E4)
   const rawNotes = input.toUpperCase().split(/\s+/);
   const parsedSequence = [];
+
   rawNotes.forEach(n => {
     if (NOTE_FREQUENCIES[n]) {
       parsedSequence.push({ note: n, duration: '4' });
@@ -260,39 +209,12 @@ function processSongInput(input) {
   });
 
   if (parsedSequence.length > 0) {
-    return {
-      title: `Partitura Personalizada`,
-      notes: parsedSequence
-    };
+    stopSequence();
+    currentSequence = parsedSequence;
+    renderSheetMusic(currentSequence);
+  } else {
+    alert('Nenhuma nota válida. Digite notas como: C4, D#4, E4, C5');
   }
-
-  // 3. Fallback inteligente para nomes não cadastrados
-  return {
-    title: `Arranjo para: "${input}"`,
-    notes: [
-      { note: 'C4', duration: '4' }, { note: 'E4', duration: '4' }, { note: 'G4', duration: '4' }, { note: 'B4', duration: '4' },
-      { note: 'C5', duration: '4' }, { note: 'G4', duration: '4' }, { note: 'E4', duration: '4' }, { note: 'C4', duration: '2' }
-    ]
-  };
-}
-
-// --- 7. EVENTOS E INICIALIZAÇÃO ---
-
-document.getElementById('song-select').addEventListener('change', (e) => {
-  stopSequence();
-  currentSongData = PRESET_SONGS[e.target.value];
-  document.getElementById('song-title-display').innerText = currentSongData.title;
-  renderSheetMusic(currentSongData.notes);
-});
-
-document.getElementById('btn-generate').addEventListener('click', () => {
-  const input = document.getElementById('song-search').value;
-  if (!input) return;
-
-  stopSequence();
-  currentSongData = processSongInput(input);
-  document.getElementById('song-title-display').innerText = currentSongData.title;
-  renderSheetMusic(currentSongData.notes);
 });
 
 document.getElementById('tempo').addEventListener('input', (e) => {
@@ -302,8 +224,8 @@ document.getElementById('tempo').addEventListener('input', (e) => {
 document.getElementById('btn-play').addEventListener('click', playSequence);
 document.getElementById('btn-stop').addEventListener('click', stopSequence);
 
+// Inicialização
 window.addEventListener('DOMContentLoaded', () => {
   createPianoKeys();
-  document.getElementById('song-title-display').innerText = currentSongData.title;
-  renderSheetMusic(currentSongData.notes);
+  renderSheetMusic(currentSequence);
 });
